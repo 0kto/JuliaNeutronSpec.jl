@@ -31,6 +31,7 @@ function __init__()
 end
 
 # definition of types -------------------------------------------------
+include("types/Experiment.jl")
 
 # actual package code -------------------------------------------------
 # Load and normalize Data
