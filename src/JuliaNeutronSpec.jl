@@ -1,6 +1,8 @@
 module JuliaNeutronSpec
 
-# import packages -----------------------------------------------------
+# import packages =====================================================
+# make packages (and corresponding types!) available in the environment
+# after JuliaNeutronSpec is loaded.
 using Reexport
 
 # load core Packages and the respective extensions --------------------
@@ -34,8 +36,8 @@ end
 include("types/Experiment.jl")
 include("types/columns.jl")
 
-# actual package code -------------------------------------------------
-# Load and normalize Data
+# actual package code =================================================
+# Load and normalize Data ---------------------------------------------
 include("io/load_data.jl")
 include("io/io_ill.jl")
 include("io/io_ill_header.jl")
