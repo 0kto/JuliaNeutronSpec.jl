@@ -32,6 +32,7 @@ end
 
 # definition of types -------------------------------------------------
 include("types/Experiment.jl")
+include("types/columns.jl")
 
 # actual package code -------------------------------------------------
 # Load and normalize Data
