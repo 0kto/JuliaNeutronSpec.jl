@@ -8,7 +8,7 @@ function loadData(experiment::JuliaNeutronSpec.Experiment,
 		filename = "$(experiment.dataPath)/$pattern"
 		# dealing with a single file, load file directly
 		if experiment.facility == :ILL
-			if experiment.instrument == :IN8
+			if experiment.instrument ⊆ [:IN8, :IN20]
 				df_out = io_ill(filename; kwargs...)
 			else
 				@error "Instrument is not implemented"
