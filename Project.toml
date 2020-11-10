@@ -1,0 +1,13 @@
+name = "JuliaNeutronSpec"
+uuid = "3067a5ee-6d41-4455-8516-08a43c58af90"
+authors = ["mjk <mjk@dmjk.net> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
