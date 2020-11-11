@@ -8,7 +8,7 @@ DataFrames holding TAS Neutron Data.
 """
 columnsTAS = OrderedDict{Symbol,Type}(
 	# identifier
-    :scnID   => Union{Missings.Missing, Number , Array{Number,1}} ,
+    :scnID   => Union{Missings.Missing, Number , Vector{Number}} ,
     :detID   => Union{Missings.Missing, Number} ,
     :scnIDX  => Union{Missings.Missing, Number} ,
     :date    => Union{Missings.Missing, DateTime} ,
@@ -37,10 +37,10 @@ columnsTAS = OrderedDict{Symbol,Type}(
     :P     => Union{Missings.Missing, Number} ,
     # scattering quantities
     :ki   => Union{Missings.Missing, Number} ,
-    :Ki   => Union{Missings.Missing, SVector{3,Number}} ,
+    :Ki   => Union{Missings.Missing, StaticArrays.SVector{3,Number}} ,
     :mono => Union{Missings.Missing, Symbol} ,
     :kf   => Union{Missings.Missing, Number} ,
-    :Kf   => Union{Missings.Missing, SVector{3,Number}} ,
+    :Kf   => Union{Missings.Missing, StaticArrays.SVector{3,Number}} ,
     :ana  => Union{Missings.Missing, Symbol} ,
     :q    => Union{Missings.Missing, Number} ,
     :qh   => Union{Missings.Missing, Number} ,
@@ -54,10 +54,10 @@ columnsTAS = OrderedDict{Symbol,Type}(
     :ω  => Union{Missings.Missing, Number} ,
     :R  => Union{Missings.Missing, Rotations.RotZYX{Number}} ,
     # Q vector in all coordinate systems
-    :Q   => Union{Missings.Missing, SVector{3,Number}} ,
-    :Q_L => Union{Missings.Missing, SVector{3,Number}} ,
-    :Q_θ => Union{Missings.Missing, SVector{3,Number}} ,
-    :Q_ν => Union{Missings.Missing, SVector{3,Number}} ,
+    :Q   => Union{Missings.Missing, StaticArrays.SVector{3,Number}} ,
+    :Q_L => Union{Missings.Missing, StaticArrays.SVector{3,Number}} ,
+    :Q_θ => Union{Missings.Missing, StaticArrays.SVector{3,Number}} ,
+    :Q_ν => Union{Missings.Missing, StaticArrays.SVector{3,Number}} ,
     # ILL motors
     :A1  => Union{Missings.Missing, Number} ,
     :A2  => Union{Missings.Missing, Number} ,

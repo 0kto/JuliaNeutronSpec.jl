@@ -7,11 +7,12 @@ function io_ill(filename::AbstractString;
     param, varia, df_meta, motor0  = io_ill_header(filename)
     # read file -----------------------------------------------------------------
     fc = readlines(filename)
-    df_raw = CSV.read(filename, header = df_meta[:ln_param_end]+1,
-                      limit = df_meta[:lns_data],
-                      delim=' ',
-                      ignorerepeated = true,
-                      silencewarnings = true) |> DataFrame
+    df_raw = CSV.read(filename, DataFrame;
+                        header = df_meta[:ln_param_end]+1,
+                        limit = df_meta[:lns_data],
+                        delim = ' ',
+                        ignorerepeated = true,
+                        silencewarnings = true) 
     df_raw[!,:scnID] .= df_meta[:scnID]
     df_raw[!,:scnIDX] = collect(1:size(df_raw,1))
     # test for multidetector like Flatcone --------------------------------------
@@ -19,12 +20,12 @@ function io_ill(filename::AbstractString;
     if multidetectorCNTS_start != nothing
         # add columns to df_raw
         df_raw[!,:detID] .= 0
-        df_multi = CSV.read(filename, header = false,
+        df_multi = CSV.read(filename, DataFrame;
+                            header = false,
                             datarow = multidetectorCNTS_start+1,
-                            delim=' ', 
-                            ignorerepeated=true,
-                            silencewarnings = true
-                            ) |> DataFrame
+                            delim = ' ', 
+                            ignorerepeated = true,
+                            silencewarnings = true)
         multidetectorChannelNumber = size(df_multi,2)
         df_multi[!,:PNT] = 1:size(df_multi,1)
         df_join = join(df_raw, df_multi, on = :PNT)
