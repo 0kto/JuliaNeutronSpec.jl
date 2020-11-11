@@ -13,8 +13,8 @@ function io_ill_header(filename::AbstractString; kwargs...)
     # init variables
     param   = Dict{Symbol,Union{Missing,Number}}()
     varia   = Dict{Symbol,Union{Missing,Number}}()
-    motor0  = Dict{Symbol,Union{Missing,Number}}()
     df_meta = Dict{Symbol,Any}()
+    motor0  = Dict{Symbol,Union{Missing,Number}}()
 
     # read file
     fc = readlines(filename)
@@ -66,7 +66,7 @@ function io_ill_header(filename::AbstractString; kwargs...)
                     try
                         key,val = split(pair,['=',' '],keepempty=false)
                         val = val == "**********" ? missing : parse(Float64,val)
-                        push!(zeros,(Symbol(key) => val))
+                        push!(motor0,(Symbol(key) => val))
                     catch; nothing;
                     end
                 end
@@ -117,5 +117,5 @@ function io_ill_header(filename::AbstractString; kwargs...)
             1/df_meta[:par_lat][3]
         ])'
 
-    return param, varia, df_meta, zeros
+    return param, varia, df_meta, motor0
 end
