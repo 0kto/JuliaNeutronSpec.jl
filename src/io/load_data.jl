@@ -1,6 +1,6 @@
-export loadData
+export load_data
 
-function loadData(experiment::JuliaNeutronSpec.Experiment,
+function load_data(experiment::JuliaNeutronSpec.Experiment,
 		pattern::AbstractString;
 		kwargs...
 	)
@@ -8,7 +8,7 @@ function loadData(experiment::JuliaNeutronSpec.Experiment,
 		filename = "$(experiment.dataPath)/$pattern"
 		# dealing with a single file, load file directly
 		if experiment.facility == :ILL
-			if experiment.instrument ⊆ [:IN8, :IN20]
+			if [experiment.instrument] ⊆ [:IN8, :IN20]
 				df_out = io_ill(filename; kwargs...)
 			else
 				@error "Instrument is not implemented"
@@ -18,10 +18,10 @@ function loadData(experiment::JuliaNeutronSpec.Experiment,
 		end
 	else
 		# create output object
-		df_out = DataFrames(columnsTAS(); items = 0)
+		df_out = DataFrame(columnsTAS(); items = 0)
 		# iterate over files and append
 		for file in glob(pattern, experiment.dataPath)
-			df_file = loadData(experiment, file; kwargs...),
+			df_file = load_data(experiment, file; kwargs...),
 	    	append!(df_out, df_file)
 	    end
 	end

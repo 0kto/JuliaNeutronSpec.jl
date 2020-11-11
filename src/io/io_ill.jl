@@ -58,7 +58,7 @@ function io_ill(filename::AbstractString;
         end
     end
     # create dummy output -------------------------------------------------------
-    df_out_dummy = DataFrame(columnsTAS(),items = size(df_raw,1))
+    df_out_dummy = DataFrame(columnsTAS,items = size(df_raw,1))
     # investigate metadata ------------------------------------------------------
     # put ki --------------------------------------------------------------------
     haskey(param, :DM) ? df_raw[!,:DM] .= param[:DM] : df_raw[!,:DM] .= missing

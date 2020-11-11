@@ -8,6 +8,7 @@ using Reexport
 # load core Packages and the respective extensions --------------------
 @reexport using DataFrames
 	include("core-extensions/DataFrames.jl")
+	include("core-extensions/Base.jl")
 using Glob
 @reexport using Query
 @reexport using Measurements
@@ -20,6 +21,8 @@ using Glob
 @reexport using DataStructures
 @reexport using Rotations
 @reexport using CoordinateTransformations
+@reexport using LinearAlgebra
+@reexport using CSV
 
 # load extensions for optional packages -------------------------------
 # these extensions are only loaded if a the respective package is 
