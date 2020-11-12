@@ -4,7 +4,7 @@ using Test
 # variables -----------------------------------------------------------
 dataPath = "$(pwd())/test_data"
 
-@testset "Experiment type             " begin
+@testset "Experiment type               " begin
     myExperiment = Experiment("MySample","This is a sample experiment", :ILL, "Test01", :IN20, "~/")
     @test myExperiment.sample == "MySample"
     @test myExperiment.description == "This is a sample experiment"
@@ -14,16 +14,16 @@ dataPath = "$(pwd())/test_data"
     @test myExperiment.dataPath == "~/"
 end
 
-@testset "Extending DataFrames package" begin
+@testset "Extending DataFrames package  " begin
     @test size(DataFrame(columnsTAS; items = 3)) == (3, length(columnsTAS))
 end
 
-@testset "Read header of IN20 datafiles" begin
+@testset "Read header of IN20 datafiles " begin
 	param, varia, df_meta, motor0 = io_ill_header("$dataPath/092575")
 	@test df_meta[:scnID] == 92575
 end
 
-@testset "Load Data for ILL / IN20    " begin
+@testset "Load Data for ILL / IN20      " begin
 	myExperiment = Experiment("Ca2RuO4","This is a sample polarized TAS experiment", :ILL, "4-01-1431", :IN20, dataPath)
 	data_ill_in20 = load_data(myExperiment, "092575")
 	# the test file  has five data points
@@ -47,4 +47,19 @@ end
 			end
 		end
 	end
+end
+
+@testset "scattering functions          " begin
+    @test Ki(1.0) == SVector(0,1,0)
+    @test ismissing(Ki(missing))
+    @test ismissing(Ki(NaN))
+
+    @test Kf(1.0, 0) == SVector(0,1,0)
+    @test Kf(1.0, 90) == SVector(-1,0,0)
+    @test Kf(1.0, 45, 90) == SVector(0,0,1)
+    @test Kf(1.0, 45, ψ=90) == SVector(0,0,1)
+    @test ismissing(Kf(missing, 0))
+    @test ismissing(Kf(NaN, 0))
+    @test ismissing(Kf(0, missing))
+    @test ismissing(Kf(0, 0; ψ = missing))
 end
