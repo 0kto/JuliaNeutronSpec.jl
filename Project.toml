@@ -23,10 +23,9 @@ SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
-DataFrames = "0.21"
-StaticArrays = "0.12"
-Glob = "1.3"
 CoordinateTransformations = "0.6"
+DataFrames = "0.21"
+Glob = "1.3"
 Interpolations = "0.13"
 Measurements = "2.3"
 Missings = "0.4"
@@ -34,6 +33,8 @@ Query = "1.0"
 Reexport = "0.2"
 Requires = "1.1"
 Rotations = "1.0"
+SpecialFunctions = "0.10"
+StaticArrays = "0.12"
 julia = "1"
 
 [extras]
