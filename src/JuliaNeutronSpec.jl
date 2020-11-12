@@ -40,12 +40,17 @@ include("helpers/tests.jl")
 # definition of types -------------------------------------------------
 include("types/Experiment.jl")
 include("types/columns.jl")
-
 # Load and normalize Data ---------------------------------------------
 include("io/load_data.jl")
 include("io/io_ill.jl")
 include("io/io_ill_header.jl")
 # scattering routines -------------------------------------------------
 include("scattering_routines/tas_functions.jl")
+include("scattering_routines/scattering_functions.jl")
+# analysis stuff ------------------------------------------------------
+include("analysis/BoseFactor.jl")
+include("analysis/OrientationFactor.jl")
+include("analysis/MagneticFormFactor.jl")
+include("analysis/PolarizationAnalysis.jl")
 
 end
