@@ -18,6 +18,50 @@ end
     @test size(DataFrame(columnsTAS; items = 3)) == (3, length(columnsTAS))
 end
 
+# This experiment has not been made public yet, so I can not ship a 
+# datafile for testing as of now.
+# This should be reflected in CodeCoverage, which must be run locally.
+if isfile("$dataPath/022019")
+
+	@testset "Read header of IN8 datafiles  " begin
+		param, varia, df_meta, motor0 = io_ill_header("$dataPath/022019")
+		@test df_meta[:scnID] == 22019
+	end
+
+
+	@testset "Load Data for ILL / IN8 (FC)  " begin
+		myExperiment = Experiment("Ca3Ru2O7","This is a sample polarized TAS experiment", :ILL, "4-10-1495", :IN8, dataPath)
+		data_ill_in8 = load_data(myExperiment, "022019")
+		# the test file  has 111 data points * 31 Flatcone channels
+		@test size(data_ill_in8,1) == 111 * 31
+
+		# test if number of DataFrame columns is the same as the number
+		# of columns defined in the OrderedDict from columnsTAS().
+		@test size(data_ill_in8,2) == length(columnsTAS)
+
+		# check identifiers
+		@test data_ill_in8[ 1,:scnID]  == 22019
+		@test data_ill_in8[ 1,:detID]  == 1
+		@test data_ill_in8[31,:detID]  == 31
+		@test data_ill_in8[32,:detID]  == 1
+		@test data_ill_in8[ 1,:scnIDX] == 1
+		@test data_ill_in8[32,:scnIDX] == 2
+
+		# check important columns for missing info
+		for (col,coltype) in columnsTAS
+			if [col] ⊆ [:EN, :QH, :QK, :QL, :CNTS, :MON, :MONana, :time, :TEMP, :ki, :kf, :q, :qh, :qk, :ql]
+				@test begin
+					if ismissing(data_ill_in8[1,col]) == false
+						true
+					else
+						@show "offending column: $col"
+					end
+				end
+			end
+		end
+	end
+end
+
 @testset "Read header of IN20 datafiles " begin
 	param, varia, df_meta, motor0 = io_ill_header("$dataPath/092575")
 	@test df_meta[:scnID] == 92575
