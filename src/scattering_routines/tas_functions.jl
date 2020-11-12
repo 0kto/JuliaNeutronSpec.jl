@@ -1,6 +1,6 @@
 export Ki
 function Ki(ki::Union{Missing, Number})
-	[typeof(ki)] ⊆ [Missing, Nothing] || isnan(ki) ?  missing : SVector{3,Number}(0,ki,0)
+	isValid(ki) ?  SVector{3,Number}(0,ki,0) : missing
 end
 
 export Kf
@@ -13,15 +13,12 @@ calculate Kf from kf (Å^-1), ϕ (°), and ψ.
 TODO: implement out-of-plane scattering depending on ψ.
 """
 function Kf(kf::Union{Missing, Number}, ϕ::Union{Missing, Number}; ψ::Union{Missing,Number} = 0) 
-	kf_is_invalid = [typeof(kf)] ⊆ [Missing, Nothing] || isnan(kf)
-	ϕ_is_invalid  = [typeof(ϕ)]  ⊆ [Missing, Nothing] || isnan(ϕ)
-	ψ_is_invalid  = [typeof(ψ)]  ⊆ [Missing, Nothing] || isnan(ψ)
-	if kf_is_invalid || ϕ_is_invalid || ψ_is_invalid
-		Kf = missing
-	else
+	if isValid(kf) && isValid(ϕ) && isValid(ψ)
 		Kf = kf .* SVector(-sind(ϕ)*cosd(ψ),
 							cosd(ϕ)*cosd(ψ),
 							sind(ψ))
+	else
+		Kf = missing
 	end
 	return Kf
 end

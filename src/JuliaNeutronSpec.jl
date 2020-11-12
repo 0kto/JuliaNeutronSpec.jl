@@ -35,14 +35,17 @@ function __init__()
   @require Plots="91a5bcdd-55d7-5caf-9e0b-520d859cae80" include("optional-extensions/Plots.jl")
 end
 
+# actual package code =================================================
+include("helpers/tests.jl")
 # definition of types -------------------------------------------------
 include("types/Experiment.jl")
 include("types/columns.jl")
 
-# actual package code =================================================
 # Load and normalize Data ---------------------------------------------
 include("io/load_data.jl")
 include("io/io_ill.jl")
 include("io/io_ill_header.jl")
+# scattering routines -------------------------------------------------
+include("scattering_routines/tas_functions.jl")
 
 end
