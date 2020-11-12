@@ -34,7 +34,7 @@ function EN(;ki::Number = nothing, kf::Number = nothing)
 		@warn "usage: EN(ki = ki, kf = kf"
 	end
 	if isValid(ki) && isValid(kf)
-		EN = ( (ki*1e10 )^2 - (kf*1e10 ).^2 )  * ħ^2 / 2 / mass[:neutron] / 1e-3 / abs(charge[:electron])
+		EN = ( (ki*1e10 )^2 - (kf*1e10 ).^2 )  * ħ^2 / 2 / m_n / 1e-3 / abs(e)
 	else
 		EN = missing
 	end

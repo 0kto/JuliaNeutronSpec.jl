@@ -35,6 +35,9 @@ function __init__()
   @require Plots="91a5bcdd-55d7-5caf-9e0b-520d859cae80" include("optional-extensions/Plots.jl")
 end
 
+# handle physical constants ===========================================
+import PhysicalConstants.CODATA2018: ħ, e, m_n
+
 # actual package code =================================================
 include("helpers/tests.jl")
 # definition of types -------------------------------------------------

@@ -94,7 +94,7 @@ function io_ill(filename::AbstractString;
     if hasproperty(df_raw, :EN)
         nothing
     else
-        df_raw[!,:EN]    = @. ħ^2 * ( (df_raw[:,:ki]*1e10 )^2 - (df_raw[:,:kf]*1e10 )^2 )  / 2 / mass[:neutron] / 1e-3 / abs(charge[:electron])
+        df_raw[!,:EN] = map(pt -> EN(;ki = df_raw[pt,:ki], kf = df_raw[pt,:kf]), 1:size(df_raw,1) )
     end
     # # populate df_out with overrides ------------------------------------------
     # if haskey(kwargs,:override)
