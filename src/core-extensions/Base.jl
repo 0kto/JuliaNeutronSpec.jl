@@ -10,7 +10,7 @@ function Base.round(df_in::AbstractDataFrame,
   for (col,precision) in precision_dict
     if hasproperty(df,col)
       mask = @. ismissing(df[:,col]) == false
-      df[mask,col] = @. round(df[mask,col]; digits=precision)
+      df[mask,col] = @. round(df[mask,col], RoundingNearstTiesUp; digits=precision, base = 10)
     end
   end
   return df
