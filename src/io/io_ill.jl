@@ -28,7 +28,7 @@ function io_ill(filename::AbstractString;
                             silencewarnings = true)
         multidetectorChannelNumber = size(df_multi,2)
         df_multi[!,:PNT] = 1:size(df_multi,1)
-        df_join = join(df_raw, df_multi, on = :PNT)
+        df_join = innerjoin(df_raw, df_multi, on = :PNT, makeunique = false, validate=(false,false))
         df_current  = similar(df_raw[[],vcat(filter!(i -> i ≠ "CNTS", names(df_raw)), "CNTS")])
         for pnt in 1:df_meta[:lns_data]
             for det_idx in 1:multidetectorChannelNumber
@@ -104,7 +104,7 @@ function io_ill(filename::AbstractString;
     # end
     # set proper types for columns ----------------------------------------------
     for key in names(df_raw)
-            isa(eltype(df_raw[:,key]), Union) ? nothing : df_raw[!,key] .= Array{Union{Missing,eltype(df_raw[:,key])}}(df_raw[:,key])
+        isa(eltype(df_raw[:,key]), Union) ? nothing : df_raw[!,key] .= Array{Union{Missing,eltype(df_raw[:,key])}}(df_raw[:,key])
     end
     # create the final DataFrame ------------------------------------------------
     df_out = DataFrame(columnsTAS,items = size(df_raw,1))
