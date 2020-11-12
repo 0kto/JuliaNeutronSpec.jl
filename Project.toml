@@ -1,7 +1,7 @@
 name = "JuliaNeutronSpec"
 uuid = "3067a5ee-6d41-4455-8516-08a43c58af90"
 authors = ["mjk <mjk@dmjk.net> and contributors"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
