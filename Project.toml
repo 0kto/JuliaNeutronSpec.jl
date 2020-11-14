@@ -25,6 +25,7 @@ SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
+CSV = "0.8"
 CoordinateTransformations = "0.6"
 DataFrames = "0.21"
 Glob = "1.3"
