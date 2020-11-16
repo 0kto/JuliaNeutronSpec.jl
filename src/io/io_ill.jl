@@ -59,8 +59,6 @@ function io_ill(filename::AbstractString;
         end
     end
     # create dummy output -------------------------------------------------------
-    df_out_dummy = DataFrame(columnsTAS,items = size(df_raw,1))
-    # investigate metadata ------------------------------------------------------
     # put ki --------------------------------------------------------------------
     haskey(param, :DM) ? df_raw[!,:DM] .= param[:DM] : df_raw[!,:DM] .= missing
     if haskey(kwargs, :ki)
@@ -68,15 +66,13 @@ function io_ill(filename::AbstractString;
     elseif hasproperty(df_raw, :ki)
         nothing
     elseif hasproperty(df_raw, :A1)
-        mask_A1 = .!ismissing.(df_raw[:,:A1])
-        df_out_dummy[mask_A1,:ki] = @. π / ( sind(df_raw[mask_A1,:A1]) * df_raw[:,:DM] )
-        df_raw[!,:ki] = df_out_dummy[:,:ki]
+        df_raw[!,:ki]  = map( pt -> ismissing(df_raw[pt,:A1]) ? missing : k(;ϕ = df_raw[pt,:A1], d = df_raw[pt,:DM], n = 1), 1:length(df_raw[:,:A1]) ) 
     elseif haskey(varia, :A1)
-        df_raw[!,:ki] = @. π / ( sind(varia[:A1]) * df_raw[:,:DM] )
+        df_raw[!,:ki]  = map( pt -> k(;ϕ = varia[:A1], d = df_raw[pt,:DM], n = 1), 1:length(df_raw[:,:DM]) )
     else
         df_raw[!,:ki] .= missing
     end
-    df_raw[!,:Ki]   = map( pt -> ismissing(df_raw[pt,:ki]) ? missing : SVector{3,Number}(0, df_raw[pt,:ki], 0), 1:length(df_raw[:,:ki]) ) 
+    df_raw[!,:Ki]      = map( pt -> ismissing(df_raw[pt,:ki]) ? missing : Ki(df_raw[pt, :ki]), 1:length(df_raw[:,:ki]) ) 
     # put kf --------------------------------------------------------------------
     haskey(param, :DA) ? df_raw[!,:DA] .= param[:DA] : nothing
     if haskey(kwargs, :kf)
@@ -107,7 +103,7 @@ function io_ill(filename::AbstractString;
         isa(eltype(df_raw[:,key]), Union) ? nothing : df_raw[!,key] .= Array{Union{Missing,eltype(df_raw[:,key])}}(df_raw[:,key])
     end
     # create the final DataFrame ------------------------------------------------
-    df_out = DataFrame(columnsTAS,items = size(df_raw,1))
+    df_out = DataFrame(columnsTAS; items = size(df_raw,1))
     # detect spin-flip in IN20 polarization measurements ------------------------
     if hasproperty(df_raw, :F2)
         df_out[!,:polSF]  = df_raw[:,:F2] .== 1

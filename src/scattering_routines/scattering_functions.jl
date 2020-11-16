@@ -3,7 +3,7 @@ function λ(;ϕ::Number = nothing, d::Number = nothing, n::Integer=1)
 		@warn "usage: λ(ϕ = <detector angle>, d = <spacing>, n = <order>"
 	end
 	if isValid(ϕ) && isValid(d)
-		λ = (ϕ) *d * 2 / n
+		λ = sind(ϕ) *d * 2 / n
 	else
 		λ = missing
 	end

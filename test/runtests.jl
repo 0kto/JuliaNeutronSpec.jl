@@ -15,7 +15,7 @@ dataPath = "$(pwd())/test_data"
 end
 
 @testset "Extending DataFrames package  " begin
-    @test size(DataFrame(columnsTAS; items = 3)) == (3, length(columnsTAS))
+    @test size(DataFrame(columnsTAS)) == (0, length(columnsTAS))
 end
 
 # This experiment has not been made public yet, so I can not ship a 

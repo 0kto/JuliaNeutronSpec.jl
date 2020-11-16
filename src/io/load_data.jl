@@ -16,14 +16,16 @@ function load_data(experiment::JuliaNeutronSpec.Experiment,
 		else
 			@error "No Instrument of Facility implemented"
 		end
-	else
+	elseif isdir(experiment.dataPath)
 		# create output object
-		df_out = DataFrame(columnsTAS(); items = 0)
+		df_out = DataFrame(columnsTAS)
 		# iterate over files and append
 		for file in glob(pattern, experiment.dataPath)
 			df_file = load_data(experiment, file; kwargs...),
 	    	append!(df_out, df_file)
 	    end
+	else
+		@error "no file or directory found."
 	end
 	return df_out
 end
