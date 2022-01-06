@@ -39,6 +39,7 @@ Query = "1.0"
 Reexport = "0.2"
 Requires = "1.1"
 Rotations = "1.0"
+SpecialFunctions = "1.2"
 StaticArrays = "0.12"
 julia = "1"
 
