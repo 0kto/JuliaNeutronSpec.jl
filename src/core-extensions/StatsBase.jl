@@ -6,8 +6,6 @@ function StatsBase.fit(::Type{Histogram},
         weights::Symbol=:NA,
         kwargs... )
     
-    print("hi")
-
     if length(axes) == 1
         data = convert(Array{Float64,1},df[axes[1]])
     elseif length(axes) == 2
@@ -17,7 +15,7 @@ function StatsBase.fit(::Type{Histogram},
     end
             
     if weights != :NA
-        weights = Weights(Array{Float64,1}(df[weights]))
+        weights = Weights(Array(df[weights]))
         hist = StatsBase.fit(Histogram,data,weights,varargs... ;kwargs... )
     else
         hist = StatsBase.fit(Histogram,data,varargs... ;kwargs... )
