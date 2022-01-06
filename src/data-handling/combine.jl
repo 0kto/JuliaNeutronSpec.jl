@@ -8,7 +8,7 @@ function normalize!(
 
     df[monitor_col] ./= ratio
     for col = data_cols
-        df[col] ./= ratio
+        haskey(df,col) ? df[col] ./= ratio : nothing
     end
 
     nothing
