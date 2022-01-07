@@ -15,7 +15,7 @@ function StatsBase.fit(::Type{Histogram},
     end
             
     if weights != :NA
-        weights = Weights(Array(df[:,weights]))
+        weights = Weights(Vector{Real}(df[:,weights]))
         hist = StatsBase.fit(Histogram,data,weights,varargs... ;kwargs... )
     else
         hist = StatsBase.fit(Histogram,data,varargs... ;kwargs... )
