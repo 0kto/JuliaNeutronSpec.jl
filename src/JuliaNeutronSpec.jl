@@ -7,7 +7,6 @@ using Reexport
 
 # load core Packages and the respective extensions --------------------
 @reexport using DataFrames
-	include("core-extensions/DataFrames.jl")
 	include("core-extensions/Base.jl")
 @reexport using Glob
 @reexport using Query
