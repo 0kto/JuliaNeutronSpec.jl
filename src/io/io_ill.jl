@@ -6,7 +6,6 @@ function io_ill(filename::AbstractString;
     # get metadata and attach to initialized df ---------------------------------
     param, varia, df_meta, motor0  = io_ill_header(filename)
     # read file -----------------------------------------------------------------
-    fc = readlines(filename)
     df_raw = CSV.read(
         filename, DataFrame;
         header=df_meta[:ln_param_end]+1,
@@ -19,16 +18,19 @@ function io_ill(filename::AbstractString;
     df_raw[!,:scnID] .= df_meta[:scnID]
     df_raw[!,:scnIDX] = collect(1:size(df_raw,1))
     # test for multidetector like Flatcone --------------------------------------
+    fc = readlines(filename)
     multidetectorCNTS_start = findfirst(occursin.("MULTI:", fc))
     if !(multidetectorCNTS_start === nothing)
         # add columns to df_raw
         df_raw[!,:detID] .= 0
-        df_multi = CSV.read(filename, DataFrame;
-                            header = false,
-                            datarow = multidetectorCNTS_start+1,
-                            delim = ' ', 
-                            ignorerepeated = true,
-                            silencewarnings = true)
+        df_multi = CSV.read(
+            filename, DataFrame;
+            header = false,
+            datarow = multidetectorCNTS_start+1,
+            delim = ' ', 
+            ignorerepeated = true,
+            silencewarnings = true
+        )
         multidetectorChannelNumber = size(df_multi,2)
         df_multi[!,:PNT] = 1:size(df_multi,1)
         df_join = innerjoin(df_raw, df_multi, on = :PNT, makeunique = false, validate=(false,false))
@@ -61,66 +63,75 @@ function io_ill(filename::AbstractString;
             rename!(df_raw,key => val)
         end
     end
-    # create dummy output -------------------------------------------------------
-    # df_out_dummy = DataFrame(columnsTAS,items = size(df_raw,1))
-    # investigate metadata ------------------------------------------------------
-    # put ki --------------------------------------------------------------------
-    haskey(param, :DM) ? df_raw[!,:DM] .= param[:DM] : df_raw[!,:DM] .= missing
-    if haskey(kwargs, :ki)
-        df_raw[!,:ki] .= kwargs[:ki]
-    elseif hasproperty(df_raw, :ki)
-        nothing
-    elseif hasproperty(df_raw, :A1)
-        mask_A1 = .!ismissing.(df_raw[:,:A1])
-        df_raw[mask_A1,:ki_dummy] = @. π / ( sind(df_raw[mask_A1,:A1]) * df_raw[:,:DM] )
-        df_raw[!,:ki] = df_raw[:,:ki_dummy]
-        df_raw = drop(df_raw, cols=:ki_dummy)
-    elseif haskey(varia, :A1)
-        df_raw[!,:ki] = @. π / ( sind(varia[:A1]) * df_raw[:,:DM] )
-    else
-        df_raw[!,:ki] .= missing
-    end
-    df_raw[!,:Ki]   = map( pt -> ismissing(df_raw[pt,:ki]) ? missing : SVector{3,Number}(0, df_raw[pt,:ki], 0), 1:length(df_raw[:,:ki]) ) 
-    # put kf --------------------------------------------------------------------
-    haskey(param, :DA) ? df_raw[!,:DA] .= param[:DA] : nothing
-    if haskey(kwargs, :kf)
-        df_raw[!,:kf] .= kwargs[:kf]
-    elseif hasproperty(df_raw, :kf)
-        nothing
-    elseif hasproperty(df_raw, :A5) && hasproperty(df_raw, :DA)
-        df_raw[!,:kf] = @. π / ( sind(df_raw[:,:A5]) * df_raw[:,:DA] )
-    elseif haskey(param, :KFIX)
-        df_raw[!,:kf] .= param[:KFIX]
-    else
-        df_raw[!,:kf] .= missing
-    end
-    # put Energy ----------------------------------------------------------------
-    if hasproperty(df_raw, :EN)
-        nothing
-    else
-        df_raw[!,:EN] = map(pt -> EN(;ki = df_raw[pt,:ki], kf = df_raw[pt,:kf]), 1:size(df_raw,1) )
-    end
-    # # populate df_out with overrides ------------------------------------------
-    # if haskey(kwargs,:override)
-    #   for (key,val) in kwargs[:override]
-    #     df_out[!,key] = typeof(val) <: AbstractString ? Base.eval(val) : val
-    #   end
-    # end
-    # set proper types for columns ----------------------------------------------
-    for key in propertynames(df_raw)
-        isa(eltype(df_raw[:,key]), Union) ? nothing : df_raw[!,key] .= Array{Union{Missing,eltype(df_raw[:,key])}}(df_raw[:,key])
-    end
     # create the final DataFrame ------------------------------------------------
     good_cols = intersect(
         Set(propertynames(df_raw)),
         Set(keys(JuliaNeutronSpec.columnsTAS))
     )
     df_out = df_raw[:,[ii for ii in good_cols]]
+    # investigate metadata ------------------------------------------------------
+    for dict_meta in [param, varia, df_meta]
+        # add columns that should be there (`columnsTAS`) but do not override.
+        for col in setdiff(
+            intersect(
+                keys(dict_meta),
+                keys(JuliaNeutronSpec.columnsTAS) ),
+            propertynames(df_out) )
+
+            df_out[!, col] .= dict_meta[col]
+        end
+    end
+
+    # put ki --------------------------------------------------------------------
+    haskey(param, :DM) ? df_out[!,:DM] .= param[:DM] : df_out[!,:DM] .= missing
+    if haskey(kwargs, :ki)
+        df_out[!,:ki] .= kwargs[:ki]
+    elseif hasproperty(df_out, :ki)
+        nothing
+    elseif hasproperty(df_out, :A1)
+        df_out = df_out |>
+            @mutate( ki = π / ( sind(_.A1) * _.DM ) ) |>
+            DataFrame
+    elseif haskey(varia, :A1)
+        df_out = df_out |>
+            @mutate( ki = π / ( varia[:A1] * df_out[:,:DM] ) ) |>
+            DataFrame
+    else
+        df_out[!,:ki] .= missing
+    end
+    df_out[!,:Ki]   = map( pt -> ismissing(df_out[pt,:ki]) ? missing : SVector{3,Number}(0, df_out[pt,:ki], 0), 1:length(df_out[:,:ki]) ) 
+    # put kf --------------------------------------------------------------------
+    haskey(param, :DA) ? df_out[!,:DA] .= param[:DA] : df_out[!,:DA] .= missing
+    if haskey(kwargs, :kf)
+        df_out[!,:kf] .= kwargs[:kf]
+    elseif hasproperty(df_out, :kf)
+        nothing
+    elseif hasproperty(df_out, :A5) && hasproperty(df_out, :DA)
+        df_out[!,:kf] = @. π / ( sind(df_out[:,:A5]) * df_out[:,:DA] )
+    elseif haskey(param, :KFIX)
+        df_out[!,:kf] .= param[:KFIX]
+    else
+        df_out[!,:kf] .= missing
+    end
+    # put Energy ----------------------------------------------------------------
+    if hasproperty(df_out, :EN)
+        nothing
+    else
+        df_out[!,:EN] = map(pt -> EN(;ki = df_out[pt,:ki], kf = df_out[pt,:kf]), 1:size(df_out,1) )
+    end
+    # # populate df_out with overrides ------------------------------------------
+    if haskey(kwargs,:override)
+      for (key,val) in kwargs[:override]
+        df_out[!,key] = typeof(val) <: AbstractString ? Base.eval(val) : val
+      end
+    end
+    # set proper types for columns ----------------------------------------------
+    for key in propertynames(df_out)
+        isa(eltype(df_out[:,key]), Union) ? nothing : df_out[!,key] .= Array{Union{Missing,eltype(df_out[:,key])}}(df_out[:,key])
+    end
     # detect spin-flip in IN20 polarization measurements ------------------------
     if hasproperty(df_raw, :F2)
         df_out[!,:polSF]  = df_raw[:,:F2] .== 1
-    else
-        df_out[!,:polSF] .= missing
     end
     function get_pol(HX,HY,HZ)
         if      (HX > 9) | (HX < -9) ; return :x ;
@@ -138,10 +149,8 @@ function io_ill(filename::AbstractString;
             @select( -:HX, -:HY, -:HZ ) |>
             DataFrame
     end
-
     # populate df_out with header stuff -----------------------------------------
-    for key in collect(propertynames(df_out))
-        key = Symbol(key)
+    for key in propertynames(df_out)
         haskey(varia,key)   ? df_out[:,key] .= convert(describe(df_out, cols=[key]).eltype[1], varia[key] )   : nothing
         haskey(param,key)   ? df_out[:,key] .= convert(describe(df_out, cols=[key]).eltype[1], param[key] )   : nothing
         haskey(df_meta,key) ? df_out[:,key] .= convert(describe(df_out, cols=[key]).eltype[1], df_meta[key] ) : nothing
@@ -149,22 +158,11 @@ function io_ill(filename::AbstractString;
     # add missing columns
     missing_cols = setdiff(
         keys(JuliaNeutronSpec.columnsTAS), 
-        Set(propertynames(df_out))
+        propertynames(df_out)
     )
     for col = missing_cols
         df_out[!,col] .= missing
     end
-    # populate df_out with data read from the file ------------------------------
-    # for key in names(df_out)
-    #     if hasproperty(df_raw, key) 
-    #         df_out[!,key] .= convert(typeof(df_out[:,key]), df_raw[:,key])
-    #     end
-    # end
-    # # why is this needed??
-    # if sum(ismissing(df_out[:,:EN])) > 0
-    #   mask_EN = ismissing.(df_out[:,:EN])
-    #   df_out[mask_EN,:EN]  = df_raw[mask_EN, :EN]
-    # end
     # flatcone specific ---------------------------------------------------------
     if !(multidetectorCNTS_start === nothing)
         df_out = df_out |>
