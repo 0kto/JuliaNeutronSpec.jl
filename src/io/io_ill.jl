@@ -52,7 +52,7 @@ function io_ill(filename::AbstractString;
         df_multi = CSV.read(
             filename, DataFrame;
             header = false,
-            datarow = multidetectorCNTS_start+1,
+            skipto = multidetectorCNTS_start+1,
             delim = ' ', 
             ignorerepeated = true,
             silencewarnings = true
@@ -191,6 +191,7 @@ function io_ill(filename::AbstractString;
     end
     # flatcone specific ---------------------------------------------------------
     if !(multidetectorCNTS_start === nothing)
+        UB_inv = inv(df_meta[:U] * df_meta[:B])
         df_out = df_out |>
             @mutate(δ      = _.A4 .- 52.5 ) |>
             @mutate(γ      = _.GFC ) |>
@@ -199,8 +200,7 @@ function io_ill(filename::AbstractString;
             @mutate(Qsq    = _.Q_FC[1]^2 + _.Q_FC[2]^2 + _.Q_FC[3]^2 ) |>
             @mutate(q      = sqrt(_.Qsq) ) |>
             @mutate(Q_perp = _.ki * cosd(_.δ) * sind(_.γ) ) |>
-            @mutate(Q_para = ( _.Qsq - Q_perp^2 )^0.5 ) |>
-            @mutate() |>
+            @mutate(Q_para = ( _.Qsq - _.Q_perp^2 )^0.5 ) |>
             @mutate(Q_θ    = SVector{3,Number}(_.Q_para, 0.0, _.Q_perp) ) |>
             @mutate(ψ      = asind( _.Q_perp / _.kf ) ) |>
             @mutate(χ      = atand( _.kf * sind(_.ψ) / _.Q_para ) ) |>
@@ -217,7 +217,7 @@ function io_ill(filename::AbstractString;
             @mutate(ω      = _.A3 - _.θ ) |>
             @mutate(R      = RotZYX(_.ω/180*pi, _.GL/180*pi, _.GU/180*pi) ) |>
             @mutate(Q_ν    = inv(_.R) * _.Q_θ ) |>
-            @mutate(Q      = inv(df_meta[:U] .* df_meta[:B]) * _.Q_ν ) |>
+            @mutate(Q      = UB_inv * _.Q_ν ) |>
             # sometimes inverting UB is not possible, resulting in an error
             @mutate(QH     = _.Q[1]  ) |>
             @mutate(QK     = _.Q[2]  ) |>
