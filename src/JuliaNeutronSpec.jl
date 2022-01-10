@@ -47,6 +47,7 @@ include("types/columns.jl")
 include("io/load_data.jl")
 include("io/io_ill.jl")
 include("io/io_ill_header.jl")
+include("io/efficiency.jl")
 # scattering routines -------------------------------------------------
 include("scattering_routines/tas_functions.jl")
 include("scattering_routines/scattering_functions.jl")

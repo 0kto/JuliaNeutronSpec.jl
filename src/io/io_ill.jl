@@ -231,8 +231,12 @@ function io_ill(filename::AbstractString;
         # apply detector correction -------------------------------------------------
         # if keyword 'detector_efficiency' is supplied and it has the same length as
         # detectors available, the efficency is applied to the monitor.
-        if haskey(kwargs, :detector_efficiency) && length(unique(df_out[:,:detID])) == length(kwargs[:detector_efficiency])
-            df_out |> @mutate(MON = _.MON * kwargs[:detector_efficiency][_.detID]) |> DataFrame
+        if haskey(kwargs, :detector_efficiency) && length(unique(df_out[:,:detID])) == length(kwargs[:detector_efficiency]) 
+            gdf = groupby(df_out, :detID)
+            for ii in 1:length(gdf)
+                gdf[ii][!,:MON] ./= kwargs[:detector_efficiency][ii]
+            end
+            df_out = DataFrame(gdf)
         else
             @warn "no detector efficiency given"
         end
