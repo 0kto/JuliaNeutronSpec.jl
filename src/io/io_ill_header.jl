@@ -1,15 +1,14 @@
 export io_ill_header
 """
     io_ill_header(filename::AbstractString)
+
 Reads the ILL header and returns the three dictionaries
   * `param` with all the instrument configs
   * `varia` with all the motors
   * `motor0` with all the zero values for the motors
   * `df_meta` with the line numbers important for reading the actual counts
 """
-function io_ill_header(filename::AbstractString; kwargs...)
-    kwargs = Dict{Symbol,Any}(kwargs)
-
+function io_ill_header(filename::AbstractString)
     # init variables
     param   = Dict{Symbol,Union{Missing,Number}}()
     varia   = Dict{Symbol,Union{Missing,Number}}()

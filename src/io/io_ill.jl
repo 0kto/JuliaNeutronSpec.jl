@@ -1,4 +1,30 @@
 export io_ill
+"""
+    io_ill(filename::AbstractString,
+           precision_dict::AbstractDict{Symbol,Int};
+           kwargs...)
+
+Read a single experimental measurement scan from file.
+Handles the ILL format for inelastic neutron spectrometers (tested with IN20,
+IN8) in single detector and multidetector (flatcone) configuration.
+The output DataFrame has columns determined in [`columnsTAS`](@ref).  
+Motor angles can be overwritten by supplying a dictionary to the kwarg
+`override`.
+
+# Arguments
+- `filename::AbstractString`: relative file path
+- `precision_dict::AbstractDict{Symbol,Int}`: rounding to precision for defined
+  column (`precision_dict=Dict(:EN=>2)`).
+- `kwargs...`:
+    - `rename_cols::Dict()`: `Dict(:old_name => :new_name)`
+    - `ki::Number`: only supply in ki=fixed measurements (time-of-flight)
+    - `kf::Number`: manually supply kf
+    - `override::Dict()`: `Dict(:A1 = 15.0)`
+    - `detector_efficiency::Array{Union{Float,Measurments}}`
+    - `par_lat::Array{Float,1}`: `[a b c α β γ]`
+
+See also: [`columnsTAS`](@ref), [`calc_detector_efficiency`](@ref)
+"""
 function io_ill(filename::AbstractString; 
                 precision_dict::AbstractDict{Symbol,Int} = Dict{Symbol,Int}(),
                 kwargs...)

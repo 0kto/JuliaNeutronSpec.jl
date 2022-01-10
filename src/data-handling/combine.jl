@@ -1,3 +1,17 @@
+"""
+    normalize!(
+        df::AbstractDataFrame;
+        monitor_col::Symbol=:MON,
+        monitor_count::Float64=1e4,
+        data_cols::Array{Symbol,1}=[:CNTS]
+    )
+
+normalize a DataFrame *in place* by scaling the column `monitor_col` to
+`monitor_count`, and applying the same scaling factor to the all `data_cols`
+as well.
+
+See also: [`normalize`](@ref)
+"""
 function normalize!(
     df::AbstractDataFrame;
     monitor_col::Symbol=:MON,
@@ -13,19 +27,47 @@ function normalize!(
     nothing
 end
 
+"""
+    normalize!(
+        df::AbstractDataFrame;
+        monitor_col::Symbol=:MON,
+        monitor_count::Float64=1e4,
+        data_cols::Array{Symbol,1}=[:CNTS]
+    )
+
+return a normalized DataFrame by scaling the column `monitor_col` to
+`monitor_count`, and applying the same scaling factor to the all `data_cols`
+as well.
+
+See also: [`normalize`](@ref)
+"""
 function normalize(df_in::AbstractDataFrame; kwargs...)
     df = deepcopy(df_in)
     normalize!(df; kwargs...)
     return df
 end
 
+"""
+    combine(
+        df_in::AbstractDataFrame,
+        edges;
+        bin_cols::Array{Symbol,1}=[:EN],
+        monitor_count::Number=1e4
+    )
+
+Combine multiple measurements to a single measurement.
+This function should only be applied to raw data!
+
+All data in a DataFrame is binned according to `edges` along the columns defined
+in `bin_cols` and normalized to `monitor_count`.
+
+
+"""
 function combine(
     df_in::AbstractDataFrame,
-    edges,
-    varargs...;
+    edges;
     bin_cols::Array{Symbol,1}=[:EN],
-    monitor_count::Number=1e4,
-    kwargs...
+    monitor_count::Number=1e4
 )
     df = deepcopy(df_in)
     # variables that do not scale with counting time
