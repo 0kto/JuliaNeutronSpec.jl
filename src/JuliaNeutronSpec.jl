@@ -23,8 +23,10 @@ using Reexport
 @reexport using LinearAlgebra
 @reexport using CSV
 @reexport using StatsBase
-  include("core-extensions/StatsBase.jl")
+    include("core-extensions/StatsBase.jl")
 
+@reexport using Dierckx
+	include("optional-extensions/Dierckx.jl")
 # load extensions for optional packages -------------------------------
 # these extensions are only loaded if a the respective package is 
 # loaded before the JuliaNeutronSpec.jl package is included.
