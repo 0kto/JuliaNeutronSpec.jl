@@ -3,6 +3,7 @@
 
 round dataframe columns defined in a precision_dict.
 """
+# import Base: round
 function Base.round(
     df_in::AbstractDataFrame,
     precision_dict::Dict{Symbol,Int}
