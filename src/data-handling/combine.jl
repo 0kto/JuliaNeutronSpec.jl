@@ -124,8 +124,16 @@ function combine(
         monitor_col = :MON
     )
     # df_out[:scnVariable]   = Tuple(bin_cols)
-
+    if length(bin_cols) === 1
+        if typeof(edges) <: StepRangeLen
+            df_out[!,bin_cols[1]] = midpoints(edges)
+        end
+    end
     # remove misssing or NaN in EN --------------------------------------------
-    mask = iszero.(sum.(ismissing.(df_out[:,:EN]) + isnan.(df_out[:,:EN])))
+    mask = iszero.(sum.(
+        ismissing.(df_out[:,:EN])
+        + isnan.(df_out[:,:EN])
+        + isnan.(values.(df_out[:,:CNTS]))
+    ))
     return df_out[mask,:]
 end
