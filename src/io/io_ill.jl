@@ -1,8 +1,5 @@
-export io_ill
 """
-    io_ill(filename::AbstractString,
-           precision_dict::AbstractDict{Symbol,Int};
-           kwargs...)
+    io_ill(filename; precision_dict=Dict{Symbol,Int}(), kwargs...)
 
 Read a single experimental measurement scan from file.
 Handles the ILL format for inelastic neutron spectrometers (tested with IN20,

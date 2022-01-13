@@ -1,8 +1,8 @@
 export io_ill_header
 """
-    io_ill_header(filename::AbstractString)
+    io_ill_header(filename)
 
-Reads the ILL header and returns the three dictionaries
+Reads the ILL header and returns the four dictionaries
   * `param` with all the instrument configs
   * `varia` with all the motors
   * `motor0` with all the zero values for the motors
