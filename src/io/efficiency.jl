@@ -14,7 +14,7 @@ the output.
 See also [`io_ill`](@ref)
 """
 function calc_detector_efficiency(df::AbstractDataFrame)
-    df = df_eff |>
+    df_efficiency = df |>
         @groupby(_.detID) |>
         @map({eff = mean(_.CNTS)}) |>
         DataFrame
