@@ -1,4 +1,4 @@
-import Dierckx: Spline1D
+import .Dierckx: Spline1D
 export Spline1D
 
 """

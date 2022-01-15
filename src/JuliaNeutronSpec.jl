@@ -6,42 +6,40 @@ module JuliaNeutronSpec
 using Reexport
 
 # load core Packages and the respective extensions --------------------
+@reexport using CSV
 @reexport using DataFrames
-	include("core-extensions/Base.jl")
-@reexport using Glob
 @reexport using Query
-@reexport using Measurements
-	include("core-extensions/Measurements.jl")
-@reexport using Missings
+@reexport using StatsBase
 @reexport using Interpolations
-	include("core-extensions/Interpolations.jl")
+@reexport using Measurements
+@reexport using Missings
+
+@reexport using Glob
 @reexport using Dates
 @reexport using StaticArrays
 @reexport using DataStructures
 @reexport using Rotations
 @reexport using CoordinateTransformations
 @reexport using LinearAlgebra
-@reexport using CSV
-@reexport using StatsBase
-    include("core-extensions/StatsBase.jl")
 
-@reexport using Dierckx
-	include("optional-extensions/Dierckx.jl")
+
 # load extensions for optional packages -------------------------------
-# these extensions are only loaded if a the respective package is 
-# loaded before the JuliaNeutronSpec.jl package is included.
-# using Requires # provides the functionality
-# function __init__()
-#   @require Dierckx="39dd38d3-220a-591b-8e3c-4c3a8c710a94" include("optional-extensions/Dierckx.jl")
-#   @require DataFitting="2e2c70e5-d463-5cb0-9776-5d0c86956fe9" include("optional-extensions/DataFitting.jl")
-#   @require Plots="91a5bcdd-55d7-5caf-9e0b-520d859cae80" include("optional-extensions/Plots.jl")
-# end
+using Requires
+function __init__()
+	@require Dierckx = "39dd38d3-220a-591b-8e3c-4c3a8c710a94" include("optional-extensions/Dierckx.jl")
+	#   @require DataFitting="2e2c70e5-d463-5cb0-9776-5d0c86956fe9" include("optional-extensions/DataFitting.jl")
+end
 
 # handle physical constants ===========================================
 import PhysicalConstants.CODATA2018: ħ, e, m_n
 
 # actual package code =================================================
 include("helpers/tests.jl")
+# extension to methods of external packages ---------------------------
+include("core-extensions/Base.jl")
+include("core-extensions/Measurements.jl")
+include("core-extensions/StatsBase.jl")
+include("core-extensions/Interpolations.jl")
 # definition of types -------------------------------------------------
 include("types/Experiment.jl")  # not currently implemented
 include("types/columns.jl")
